@@ -4,6 +4,8 @@
 // the router for the paths and their parameters, req.query for the query strings,
 // req.chunk() for the request bodies, res.json() for the JSON, Cpeak's own compression
 // for json-comp, cpeak::sleep() for async and Cpeak's https option for the TLS tests.
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 use std::sync::LazyLock;
 use std::time::Duration;
