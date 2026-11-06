@@ -1,4 +1,5 @@
 const std = @import("std");
+const mimalloc = @import("mimalloc");
 const zio = @import("zio");
 const http = @import("dusty");
 const pg = @import("pg");
@@ -216,7 +217,9 @@ fn echoBody(req: *http.Request, res: *http.Response) !void {
 }
 
 pub fn main(init: std.process.Init) !void {
-    var rt = try zio.Runtime.init(init.gpa, .{ .executors = .auto });
+    const alloc = mimalloc.global_allocator;
+    //var rt = try zio.Runtime.init(init.gpa, .{ .executors = .auto });
+    var rt = try zio.Runtime.init(alloc, .{ .executors = .auto });
     defer rt.deinit();
 
     loadDataset(init.arena.allocator(), rt.io());

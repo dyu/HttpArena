@@ -11,6 +11,12 @@ pub fn build(b: *std.Build) void {
     });
     const dusty_mod = dusty_dep.module("dusty");
 
+    const mimalloc_dep = b.dependency("mimalloc", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    const mimalloc_mod = mimalloc_dep.module("mimalloc");
+
     const zio_dep = b.dependency("zio", .{
         .target = target,
         .optimize = optimize,
@@ -42,6 +48,7 @@ pub fn build(b: *std.Build) void {
         }),
     });
     exe.root_module.addImport("dusty", dusty_mod);
+    exe.root_module.addImport("mimalloc", mimalloc_mod);
     exe.root_module.addImport("zio", zio_mod);
     exe.root_module.addImport("pg", pg_dep.module("pg"));
     exe.root_module.addImport("zt", zt_dep.module("zt"));

@@ -13,6 +13,10 @@
             .url = "git+https://github.com/lalinsky/dusty?ref=v0.5.0#48196c2d81f6cc54f6483b87f56cf808a9d7ba56",
             .hash = "dusty-0.5.0-Qdw7RuwFJAAvz4m-QiYLfUnjj0_91imaCApFQXcDyt1p",
         },
+        .mimalloc = .{
+            .url = "git+https://github.com/dyu/zig-mimalloc#972db7244fac7426c6630cbd2382d22939f330f9",
+            .hash = "mimalloc-0.1.0-thznu_M6AACTRKfn2kAeEA88aqdPVqslRPswu_ywEQuO",
+        },
         .zio = .{
             .url = "git+https://github.com/lalinsky/zio#32bbf047aac8b1fa7e49dc1a79ae8082b4a1b33a",
             .hash = "zio-0.19.0-xHbVVOehLQCpyVIYHdtdeEHRc-gMZgF5WUdhm52KnRqQ",
