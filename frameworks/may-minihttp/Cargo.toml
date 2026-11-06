@@ -7,7 +7,8 @@ edition = "2021"
 may = "0.3"
 httparse = "1"
 num_cpus = "1"
-mimalloc = { version = "0.1", default-features = false }
+#mimalloc = { version = "0.1", default-features = false }
+mimalloc = { git = "https://github.com/dyu/mimalloc_rust.git", branch = "legacy", default-features = false }
 
 [profile.release]
 opt-level = 3
