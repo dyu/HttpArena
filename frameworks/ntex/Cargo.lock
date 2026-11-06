@@ -543,6 +543,7 @@ name = "httparena-ntex"
 version = "0.4.0"
 dependencies = [
  "flate2",
+ "mimalloc",
  "ntex",
  "rcgen",
  "rustls",
@@ -603,6 +604,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "65cd87c9a6d60536580b316ad985726104730a5151c99845f2490428ef91240a"
 
 [[package]]
+name = "libmimalloc-sys"
+version = "0.1.43"
+source = "git+https://github.com/dyu/mimalloc_rust.git?branch=legacy#64274bf3cc19e620fc1b66ae229452c9e2b5ac2a"
+dependencies = [
+ "cc",
+ "libc",
+]
+
+[[package]]
 name = "linux-raw-sys"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -650,6 +660,14 @@ name = "memchr"
 version = "2.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
+
+[[package]]
+name = "mimalloc"
+version = "0.1.47"
+source = "git+https://github.com/dyu/mimalloc_rust.git?branch=legacy#64274bf3cc19e620fc1b66ae229452c9e2b5ac2a"
+dependencies = [
+ "libmimalloc-sys",
+]
 
 [[package]]
 name = "mime"

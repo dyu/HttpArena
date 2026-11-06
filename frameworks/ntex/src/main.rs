@@ -1,3 +1,6 @@
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
 use ntex::io::IoConfig;
 use ntex::util::{BytePageSize, Bytes};
 use ntex::web::{self, App, HttpResponse, HttpServer, middleware};
