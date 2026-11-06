@@ -46,8 +46,10 @@ build_dusty() {
 
 for REL_PATH in $RS_TARGETS; do
   [ -e "$REL_PATH" ] || build_rs `dirname $(dirname $REL_PATH)`
+  du -shL $REL_PATH
 done
 
-for REL_PATH in $DUSTY_TARGETS_TARGETS; do
+for REL_PATH in $DUSTY_TARGETS; do
   [ -e "$REL_PATH" ] || build_dusty `dirname $(dirname $REL_PATH)`
+  du -shL $REL_PATH
 done
