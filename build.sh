@@ -45,11 +45,15 @@ build_dusty() {
 }
 
 for REL_PATH in $RS_TARGETS; do
-  [ -e "$REL_PATH" ] || build_rs `dirname $(dirname $REL_PATH)`
+  if [ "$FORCE" = '1' ] || [ ! -e "$REL_PATH" ]; then
+    build_rs `dirname $(dirname $REL_PATH)`
+  fi
   du -shL $REL_PATH
 done
 
 for REL_PATH in $DUSTY_TARGETS; do
-  [ -e "$REL_PATH" ] || build_dusty `dirname $(dirname $REL_PATH)`
+  if [ "$FORCE" = '1' ] || [ ! -e "$REL_PATH" ]; then
+    build_dusty `dirname $(dirname $REL_PATH)`
+  fi
   du -shL $REL_PATH
 done
