@@ -20,6 +20,10 @@ fi
 # change pwd
 cd $SCRIPT_DIR
 
+GRADLE_TARGETS='
+frameworks/ktor/build/libs/ktor-httparena.jar
+'
+
 RS_TARGETS='
 frameworks/cpeak/target/release/httparena-cpeak
 frameworks/may-minihttp/target/release/httparena-may-minihttp
@@ -27,10 +31,31 @@ frameworks/ntex/target/release/httparena-ntex
 frameworks/tako/target/release/httparena-tako
 '
 
-DUSTY_TARGETS='
+ZIG_TARGETS='
 frameworks/dusty/zig-out/bin/dusty-arena
 frameworks/dusty-tuned/zig-out/bin/dusty-arena
+frameworks/netcode-http/zig-out/bin/netcode-http-arena
+frameworks/nilo/zig-out/bin/nilo-arena
 '
+
+ZIG_17_TARGETS='
+frameworks/anole/zig-out/bin/anole-arena
+'
+
+ZIG_16_TARGETS='
+frameworks/uwebzockets/zig-out/bin/uwebzockets
+'
+
+build_gradle() {
+  cd `dirname $1`
+  if [ -z "$2" ]; then
+    JAVA_HOME=/usr/local/lib/jvm/jdk-25 gradle build -x test
+  else
+    shift
+    JAVA_HOME=/usr/local/lib/jvm/jdk-25 gradle $@
+  fi
+  cd - > /dev/null
+}
 
 build_rs() {
   cd `dirname $1`
@@ -38,11 +63,19 @@ build_rs() {
   cd - > /dev/null
 }
 
-build_dusty() {
+build_zig() {
+  ZIG_BIN="${2:-"zig18"}"
   cd `dirname $1`
-  zig18 build --release=fast
+  $ZIG_BIN build --release=fast
   cd - > /dev/null
 }
+
+for REL_PATH in $GRADLE_TARGETS; do
+  if [ "$FORCE" = '1' ] || [ ! -e "$REL_PATH" ]; then
+    build_gradle `dirname $(dirname $REL_PATH)` buildFatJar --no-daemon
+  fi
+  du -shL $REL_PATH
+done
 
 for REL_PATH in $RS_TARGETS; do
   if [ "$FORCE" = '1' ] || [ ! -e "$REL_PATH" ]; then
@@ -51,9 +84,27 @@ for REL_PATH in $RS_TARGETS; do
   du -shL $REL_PATH
 done
 
-for REL_PATH in $DUSTY_TARGETS; do
+for REL_PATH in $ZIG_TARGETS; do
   if [ "$FORCE" = '1' ] || [ ! -e "$REL_PATH" ]; then
-    build_dusty `dirname $(dirname $REL_PATH)`
+    build_zig `dirname $(dirname $REL_PATH)`
   fi
   du -shL $REL_PATH
 done
+
+for REL_PATH in $ZIG_17_TARGETS; do
+  if [ "$FORCE" = '1' ] || [ ! -e "$REL_PATH" ]; then
+    build_zig `dirname $(dirname $REL_PATH)` zig17
+  fi
+  du -shL $REL_PATH
+done
+
+for REL_PATH in $ZIG_16_TARGETS; do
+  if [ "$FORCE" = '1' ] || [ ! -e "$REL_PATH" ]; then
+    build_zig `dirname $(dirname $REL_PATH)` zig16
+  fi
+  du -shL $REL_PATH
+done
+
+AEGON_JAVA_JAR='frameworks/aegon-java/target/aegon-java-httparena.jar'
+[ -e $AEGON_JAVA_JAR ] || ./frameworks/aegon-java/build.sh
+du -shL $AEGON_JAVA_JAR
