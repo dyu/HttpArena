@@ -5,6 +5,7 @@ pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{ .preferred_optimize_mode = .ReleaseFast });
 
     const quic = b.dependency("quic", .{ .target = target, .optimize = optimize }).module("quic");
+    const mimalloc = b.dependency("mimalloc", .{ .target = target, .optimize = optimize }).module("mimalloc");
     const http = b.dependency("http", .{ .target = target, .optimize = optimize }).module("http");
 
     const exe = b.addExecutable(.{
@@ -16,6 +17,7 @@ pub fn build(b: *std.Build) void {
             .strip = true,
             .imports = &.{
                 .{ .name = "quic", .module = quic },
+                .{ .name = "mimalloc", .module = mimalloc },
                 .{ .name = "http", .module = http },
             },
         }),

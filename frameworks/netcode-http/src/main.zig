@@ -2,6 +2,7 @@
 //! the ports (SO_REUSEPORT): HTTP/1.1 and WebSocket on 8080, HTTP/3 on 8443.
 
 const std = @import("std");
+const mimalloc = @import("mimalloc");
 const quic = @import("quic");
 const http = @import("http");
 const event_loop = quic.event_loop;
@@ -114,7 +115,8 @@ fn onTerm(_: std.posix.SIG) callconv(.c) void {
 }
 
 pub fn main(init: std.process.Init) !void {
-    const gpa = std.heap.smp_allocator;
+    // const gpa = std.heap.smp_allocator;
+    const gpa = mimalloc.global_allocator;
     const term: std.posix.Sigaction = .{ .handler = .{ .handler = onTerm }, .mask = std.posix.sigemptyset(), .flags = 0 };
     std.posix.sigaction(.TERM, &term, null);
     std.posix.sigaction(.INT, &term, null);
