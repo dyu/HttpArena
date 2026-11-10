@@ -1,4 +1,5 @@
 const std = @import("std");
+const mimalloc = @import("mimalloc");
 const uz = @import("uWebZockets");
 
 const Port = struct {
@@ -342,8 +343,18 @@ fn serve(init: std.process.Init, mode: Mode) void {
     result catch |err| std.log.err("listener {s} stopped: {s}", .{ @tagName(mode), @errorName(err) });
 }
 
-pub fn main(init: std.process.Init) !void {
-    loadDataset(init);
+pub fn main(orig_init: std.process.Init) !void {
+    loadDataset(orig_init);
+
+    // use mimalloc for the handlers
+    const init: std.process.Init = .{
+        .minimal = orig_init.minimal,
+        .arena = orig_init.arena,
+        .gpa = mimalloc.global_allocator,
+        .io = orig_init.io,
+        .environ_map = orig_init.environ_map,
+        .preopens = orig_init.preopens,
+    };
 
     var threads: [4]std.Thread = undefined;
     threads[0] = try std.Thread.spawn(.{}, serve, .{ init, Mode.http });

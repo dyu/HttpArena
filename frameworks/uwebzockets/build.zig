@@ -4,6 +4,7 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{ .preferred_optimize_mode = .ReleaseFast });
 
+    const mimalloc = b.dependency("mimalloc", .{ .target = target, .optimize = optimize });
     const uz = b.dependency("uWebZockets", .{ .target = target, .optimize = optimize });
 
     const exe = b.addExecutable(.{
@@ -15,6 +16,7 @@ pub fn build(b: *std.Build) void {
             .strip = true,
         }),
     });
+    exe.root_module.addImport("mimalloc", mimalloc.module("mimalloc"));
     exe.root_module.addImport("uWebZockets", uz.module("uWebZockets"));
     b.installArtifact(exe);
 }

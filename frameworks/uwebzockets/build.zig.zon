@@ -4,6 +4,10 @@
     .fingerprint = 0xa939cd74d1827fbb,
     .minimum_zig_version = "0.16.0",
     .dependencies = .{
+        .mimalloc = .{
+            .url = "git+https://github.com/dyu/zig-mimalloc#7a5cf601fce8378ac3432a6b3a3734c71930ed13",
+            .hash = "mimalloc-0.1.0-xnjvEcc1AABY5NvNB9Nu3mps1KoZzwkXkVu7HIR2qrOk",
+        },
         .uWebZockets = .{
             .url = "git+https://github.com/farbenbuilds/uWebZockets?ref=v1.8.0#d94b4e546000455f2ca680d07cb61d032034d5ec",
             .hash = "uWebZockets-1.8.0-SD3SPCtoJgB2t5E5ldRsnhw2iSXJXaEU03GScHvbL_8s",
