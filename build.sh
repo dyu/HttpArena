@@ -20,6 +20,11 @@ fi
 # change pwd
 cd $SCRIPT_DIR
 
+FIB_TARGETS='
+frameworks/fib/target/server
+frameworks/fib-tuned/target/server
+'
+
 GRADLE_TARGETS='
 frameworks/ktor/build/libs/ktor-httparena.jar
 '
@@ -46,6 +51,13 @@ ZIG_16_TARGETS='
 frameworks/uwebzockets/zig-out/bin/uwebzockets
 '
 
+build_fib() {
+  cd "$1"
+  mkdir -p target
+  CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o target/server .
+  cd - > /dev/null
+}
+
 build_gradle() {
   cd `dirname $1`
   if [ -z "$2" ]; then
@@ -69,6 +81,13 @@ build_zig() {
   $ZIG_BIN build --release=fast
   cd - > /dev/null
 }
+
+for REL_PATH in $FIB_TARGETS; do
+  if [ "$FORCE" = '1' ] || [ ! -e "$REL_PATH" ]; then
+    build_fib `dirname $(dirname $REL_PATH)`
+  fi
+  du -shL $REL_PATH
+done
 
 for REL_PATH in $GRADLE_TARGETS; do
   if [ "$FORCE" = '1' ] || [ ! -e "$REL_PATH" ]; then
