@@ -9,5 +9,9 @@
             .url = "git+https://github.com/xuckless/anole?ref=v0.5.0#eb3650ec06bb1fd5ba05fa1a75b441cd8f26bb0e",
             .hash = "anole-0.5.0-WO_-FzUb5gD6t9iQFzG2LYA6oUt_Oz2exPhaJpeEjpk5",
         },
+        .mimalloc = .{
+            .url = "git+https://github.com/dyu/zig-mimalloc#972db7244fac7426c6630cbd2382d22939f330f9",
+            .hash = "mimalloc-0.1.0-thznu_M6AACTRKfn2kAeEA88aqdPVqslRPswu_ywEQuO",
+        },
     },
 }

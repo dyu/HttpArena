@@ -11,6 +11,7 @@
 //! cleartext HTTP/1.1 on 127.0.0.1:8085 only, for the edge's upstream pool;
 //! the edge owns 8443 (and answers the harness's readiness probe on 8080).
 const std = @import("std");
+const mimalloc = @import("mimalloc");
 const anole = @import("anole");
 const pb = @import("benchmark_pb");
 
@@ -300,7 +301,8 @@ pub fn main(init: std.process.Init) !void {
     const raw = try std.Io.Dir.cwd().readFileAlloc(init.io, "/data/dataset.json", init.arena.allocator(), .limited(16 << 20));
     state.dataset = try std.json.parseFromSliceLeaky([]const Item, init.arena.allocator(), raw, .{ .ignore_unknown_fields = true });
 
-    var app = try anole.Server(App).init(init.gpa, .{
+    // var app = try anole.Server(App).init(init.gpa, .{
+    var app = try anole.Server(App).init(mimalloc.global_allocator, .{
         .listeners = if (behind_edge) gateway else standalone,
         // HTTP/3's UDP sockets on the IPv6 wildcard, which takes IPv4 too:
         // the harness's QUIC client tries ::1 for localhost and, unlike its
