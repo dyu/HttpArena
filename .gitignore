@@ -26,6 +26,7 @@ frameworks/fletch/.dart_tool/
 
 # IDE settings
 *.user
+.vfox
 .vs/
 .vscode/
 .zed/
