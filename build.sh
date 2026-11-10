@@ -73,11 +73,16 @@ build_goose() {
 
 build_gradle() {
   cd `dirname $1`
+  if [ -e '.vfox/sdks/gradle/bin/gradle' ]; then
+    GRADLE_BIN='.vfox/sdks/gradle/bin/gradle'
+  else
+    GRADLE_BIN='gradle'
+  fi
   if [ -z "$2" ]; then
-    JAVA_HOME=/usr/local/lib/jvm/jdk-25 gradle build -x test
+    JAVA_HOME=/usr/local/lib/jvm/jdk-25 $GRADLE_BIN build -x test
   else
     shift
-    JAVA_HOME=/usr/local/lib/jvm/jdk-25 gradle $@
+    JAVA_HOME=/usr/local/lib/jvm/jdk-25 $GRADLE_BIN $@
   fi
   cd - > /dev/null
 }
