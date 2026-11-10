@@ -1,0 +1,281 @@
+diff --git a/frameworks/aegon-java/src/main/java/httparena/Main.java b/frameworks/aegon-java/src/main/java/httparena/Main.java
+index afb56caba..d308893a9 100644
+--- a/frameworks/aegon-java/src/main/java/httparena/Main.java
++++ b/frameworks/aegon-java/src/main/java/httparena/Main.java
+@@ -45,8 +45,8 @@ public final class Main {
+         // Port 8082: HTTP/2 cleartext prior knowledge (baseline-h2c, json-h2c)
+         server.listen(8082);
+ 
+-        String certFile = "/certs/server.crt";
+-        String keyFile = "/certs/server.key";
++        String certFile = "./certs/server.crt";
++        String keyFile = "./certs/server.key";
+         boolean hasCerts = Files.exists(Path.of(certFile)) && Files.exists(Path.of(keyFile));
+ 
+         if (hasCerts) {
+diff --git a/frameworks/anole/src/main.zig b/frameworks/anole/src/main.zig
+index e31f698fc..5249cebff 100644
+--- a/frameworks/anole/src/main.zig
++++ b/frameworks/anole/src/main.zig
+@@ -279,7 +279,7 @@ const Benchmark = struct {
+     }
+ };
+ 
+-const cert: anole.Cert = .fromFiles("/certs/server.crt", "/certs/server.key");
++const cert: anole.Cert = .fromFiles("./certs/server.crt", "./certs/server.key");
+ 
+ /// HttpArena's ports, one process (docs/server.md#several-listeners).
+ const standalone: []const anole.ServerOptions.Listener = &.{
+@@ -298,7 +298,7 @@ pub fn main(init: std.process.Init) !void {
+     const behind_edge = std.mem.eql(u8, init.environ_map.get("ANOLE_ROLE") orelse "", "gateway");
+ 
+     var state: App = .{};
+-    const raw = try std.Io.Dir.cwd().readFileAlloc(init.io, "/data/dataset.json", init.arena.allocator(), .limited(16 << 20));
++    const raw = try std.Io.Dir.cwd().readFileAlloc(init.io, "./data/dataset.json", init.arena.allocator(), .limited(16 << 20));
+     state.dataset = try std.json.parseFromSliceLeaky([]const Item, init.arena.allocator(), raw, .{ .ignore_unknown_fields = true });
+ 
+     // var app = try anole.Server(App).init(init.gpa, .{
+@@ -329,7 +329,7 @@ pub fn main(init: std.process.Init) !void {
+     app.get("/async-db", asyncDb);
+     app.wsCallbacks("/ws", WsEcho);
+     // Behind an edge, the edge serves /static from its own mount.
+-    if (!behind_edge) try app.staticDir("/static", "/data/static", .{ .precompressed = &.{ .br, .gzip } });
++    if (!behind_edge) try app.staticDir("/static", "./data/static", .{ .precompressed = &.{ .br, .gzip } });
+     app.grpcWith(pb.BenchmarkService, Benchmark, .{ .no_wait = true });
+ 
+     // Production stack.
+diff --git a/frameworks/cpeak/src/main.rs b/frameworks/cpeak/src/main.rs
+index 364c94408..3a722a760 100644
+--- a/frameworks/cpeak/src/main.rs
++++ b/frameworks/cpeak/src/main.rs
+@@ -77,7 +77,7 @@ struct Items<T> {
+ 
+ // The dataset that HttpArena mounts, read once
+ static DATASET: LazyLock<Vec<DatasetItem>> = LazyLock::new(|| {
+-    let data = std::fs::read_to_string("/data/dataset.json").unwrap_or_default();
++    let data = std::fs::read_to_string("./data/dataset.json").unwrap_or_default();
+     serde_json::from_str(&data).unwrap_or_default()
+ });
+ 
+@@ -160,8 +160,8 @@ async fn read_body(req: &mut CpeakRequest) -> Result<Vec<u8>, CpeakError> {
+ // The key and the certificate that HttpArena mounts for the tests over TLS
+ fn https_options() -> Option<HttpsOptions> {
+     Some(HttpsOptions {
+-        key: std::fs::read_to_string("/certs/server.key").ok()?,
+-        cert: std::fs::read_to_string("/certs/server.crt").ok()?,
++        key: std::fs::read_to_string("./certs/server.key").ok()?,
++        cert: std::fs::read_to_string("./certs/server.crt").ok()?,
+     })
+ }
+ 
+diff --git a/frameworks/dusty-tuned/src/main.zig b/frameworks/dusty-tuned/src/main.zig
+index ca620b01a..c04fbc6e3 100644
+--- a/frameworks/dusty-tuned/src/main.zig
++++ b/frameworks/dusty-tuned/src/main.zig
+@@ -35,7 +35,7 @@ const ResponseItem = struct {
+ };
+ 
+ fn loadDataset(allocator: std.mem.Allocator, io: std.Io) void {
+-    const file = std.Io.Dir.cwd().openFile(io, "/data/dataset.json", .{}) catch return;
++    const file = std.Io.Dir.cwd().openFile(io, "./data/dataset.json", .{}) catch return;
+     defer file.close(io);
+ 
+     var read_buf: [8192]u8 = undefined;
+@@ -237,8 +237,8 @@ pub fn main(init: std.process.Init) !void {
+         }) catch null;
+     }
+ 
+-    const cert_path = init.environ_map.get("TLS_CERT") orelse "/certs/server.crt";
+-    const key_path = init.environ_map.get("TLS_KEY") orelse "/certs/server.key";
++    const cert_path = init.environ_map.get("TLS_CERT") orelse "./certs/server.crt";
++    const key_path = init.environ_map.get("TLS_KEY") orelse "./certs/server.key";
+     const have_certs = blk: {
+         std.Io.Dir.cwd().access(rt.io(), cert_path, .{}) catch break :blk false;
+         std.Io.Dir.cwd().access(rt.io(), key_path, .{}) catch break :blk false;
+@@ -274,7 +274,7 @@ pub fn main(init: std.process.Init) !void {
+     server.router.get("/fortunes", fortunes);
+ 
+     // Mounted by the harness; absent when the server is run on its own.
+-    const static_dir: ?std.Io.Dir = std.Io.Dir.cwd().openDir(rt.io(), "/data/static", .{}) catch null;
++    const static_dir: ?std.Io.Dir = std.Io.Dir.cwd().openDir(rt.io(), "./data/static", .{}) catch null;
+     defer if (static_dir) |dir| dir.close(rt.io());
+     if (static_dir) |dir| {
+         server.router.static("/static", dir, .{ .precompressed = &.{ .br, .gzip } });
+diff --git a/frameworks/dusty/src/main.zig b/frameworks/dusty/src/main.zig
+index 902d9b95c..e266b6b71 100644
+--- a/frameworks/dusty/src/main.zig
++++ b/frameworks/dusty/src/main.zig
+@@ -34,7 +34,7 @@ const ResponseItem = struct {
+ };
+ 
+ fn loadDataset(allocator: std.mem.Allocator, io: std.Io) void {
+-    const file = std.Io.Dir.cwd().openFile(io, "/data/dataset.json", .{}) catch return;
++    const file = std.Io.Dir.cwd().openFile(io, "./data/dataset.json", .{}) catch return;
+     defer file.close(io);
+ 
+     var read_buf: [8192]u8 = undefined;
+@@ -236,8 +236,8 @@ pub fn main(init: std.process.Init) !void {
+         }) catch null;
+     }
+ 
+-    const cert_path = init.environ_map.get("TLS_CERT") orelse "/certs/server.crt";
+-    const key_path = init.environ_map.get("TLS_KEY") orelse "/certs/server.key";
++    const cert_path = init.environ_map.get("TLS_CERT") orelse "./certs/server.crt";
++    const key_path = init.environ_map.get("TLS_KEY") orelse "./certs/server.key";
+     const have_certs = blk: {
+         std.Io.Dir.cwd().access(rt.io(), cert_path, .{}) catch break :blk false;
+         std.Io.Dir.cwd().access(rt.io(), key_path, .{}) catch break :blk false;
+@@ -272,7 +272,7 @@ pub fn main(init: std.process.Init) !void {
+     server.router.get("/fortunes", fortunes);
+ 
+     // Mounted by the harness; absent when the server is run on its own.
+-    const static_dir: ?std.Io.Dir = std.Io.Dir.cwd().openDir(rt.io(), "/data/static", .{}) catch null;
++    const static_dir: ?std.Io.Dir = std.Io.Dir.cwd().openDir(rt.io(), "./data/static", .{}) catch null;
+     defer if (static_dir) |dir| dir.close(rt.io());
+     if (static_dir) |dir| {
+         server.router.static("/static", dir, .{ .precompressed = &.{ .br, .gzip } });
+diff --git a/frameworks/ktor/src/main/kotlin/com/httparena/Application.kt b/frameworks/ktor/src/main/kotlin/com/httparena/Application.kt
+index ab262d6c1..396c29075 100644
+--- a/frameworks/ktor/src/main/kotlin/com/httparena/Application.kt
++++ b/frameworks/ktor/src/main/kotlin/com/httparena/Application.kt
+@@ -232,7 +232,7 @@ private fun Application.configureRouting(appData: ArenaApplicationDeps) {
+          * Static files
+          * https://www.http-arena.com/docs/test-profiles/h1/isolated/static/
+          */
+-        staticFiles("/static", dir = File("/data/static"), index = null) {
++        staticFiles("/static", dir = File("./data/static"), index = null) {
+             preCompressed(CompressedFileType.BROTLI, CompressedFileType.GZIP)
+         }
+ 
+diff --git a/frameworks/netcode-http/src/main.zig b/frameworks/netcode-http/src/main.zig
+index f305183a7..1094bd106 100644
+--- a/frameworks/netcode-http/src/main.zig
++++ b/frameworks/netcode-http/src/main.zig
+@@ -94,8 +94,8 @@ fn serve(gpa: std.mem.Allocator) !void {
+     var server = try event_loop.Server(Worker).init(gpa, w, .{
+         .address = "0.0.0.0",
+         .port = 8443,
+-        .cert_path = "/certs/server.crt",
+-        .key_path = "/certs/server.key",
++        .cert_path = "./certs/server.crt",
++        .key_path = "./certs/server.key",
+         .reuse_port = true,
+         .http1 = .{ .port = 8080, .tls = false, .alt_svc = false, .max_connections = 65536 },
+     });
+diff --git a/frameworks/nilo/src/main.zig b/frameworks/nilo/src/main.zig
+index af38fba6b..63bd74d5a 100644
+--- a/frameworks/nilo/src/main.zig
++++ b/frameworks/nilo/src/main.zig
+@@ -122,7 +122,6 @@ fn delay(ms: u32) !Number {
+     return .{ .value = ms };
+ }
+ 
+-
+ // ---- async-db instrumentation: one line a second in the container's log ----
+ //
+ // What the board publishes for a profile is its log, so a run that comes out
+@@ -185,7 +184,6 @@ const Stats = struct {
+     }
+ };
+ 
+-
+ /// What the operating system says about this process's threads, read from
+ /// /proc once a second: where the CPU went (a few hot threads or all of
+ /// them), how often they slept, and how many pages they faulted in.
+@@ -482,7 +480,6 @@ const Range = struct {
+     limit: i32 = 50,
+ };
+ 
+-
+ fn asyncDb(db: *sql.Db, c: *nilo.Ctx, q: nilo.Query(Range)) !Listing {
+     const started = requestStarted();
+     defer requestEnded(started);
+@@ -721,7 +718,7 @@ pub fn main(init: std.process.Init) !void {
+     // The board mounts `/data/static` for the static profiles. A developer
+     // running this by hand from the repository does not have it, and the
+     // other profiles should not die for want of it.
+-    const static_dir = env.getPosix("STATIC_DIR") orelse "/data/static";
++    const static_dir = env.getPosix("STATIC_DIR") orelse "./data/static";
+     if (readable(gpa, static_dir)) {
+         try app.staticWith("/static", static_dir, .{ .follow = true });
+     } else {
+@@ -731,7 +728,7 @@ pub fn main(init: std.process.Init) !void {
+     // The 50-item dataset the board mounts. Both `/json` profiles need it,
+     // and a container without it should say so once here rather than answer
+     // a 500 per request.
+-    const dataset_path = env.getPosix("DATASET") orelse "/data/dataset.json";
++    const dataset_path = env.getPosix("DATASET") orelse "./data/dataset.json";
+     var parsed = loadDataset(gpa, dataset_path) catch |err| {
+         std.log.err(
+             "could not read the dataset at \"{s}\" ({s}). The board mounts it; " ++
+@@ -788,8 +785,8 @@ pub fn main(init: std.process.Init) !void {
+     // 8443 (TLS, `h2` first by ALPN). In a build with `.http2 = true` a TLS
+     // listener offers both by ALPN and serves what the client chose, so the
+     // two TLS ports differ only in who connects to them.
+-    const cert = env.getPosix("TLS_CERT") orelse "/certs/server.crt";
+-    const key = env.getPosix("TLS_KEY") orelse "/certs/server.key";
++    const cert = env.getPosix("TLS_CERT") orelse "./certs/server.crt";
++    const key = env.getPosix("TLS_KEY") orelse "./certs/server.key";
+     var also: [3]nilo.Options.Listener = undefined;
+     var n_also: usize = 0;
+     also[n_also] = .{ .address = "0.0.0.0", .port = 8082 };
+diff --git a/frameworks/tako/src/main.rs b/frameworks/tako/src/main.rs
+index eb02cdd6c..e089e7cbe 100644
+--- a/frameworks/tako/src/main.rs
++++ b/frameworks/tako/src/main.rs
+@@ -20,8 +20,8 @@ use tako::ws::TakoWs;
+ use tako::{Bytes, PerThreadConfig, Server, TlsCert};
+ use tokio::net::TcpListener;
+ 
+-const CERT: &str = "/certs/server.crt";
+-const KEY: &str = "/certs/server.key";
++const CERT: &str = "./certs/server.crt";
++const KEY: &str = "./certs/server.key";
+ 
+ type AppRef = &'static App;
+ 
+@@ -152,7 +152,7 @@ async fn ws_echo(req: Request) -> impl Responder {
+ }
+ 
+ fn router(app: AppRef) -> Router {
+-    let files = ServeDir::builder("/data")
++    let files = ServeDir::builder("./data")
+         .precompressed(PrecompressedPolicy::both())
+         .build();
+     let mut router = Router::new();
+@@ -200,7 +200,7 @@ async fn serve(app: AppRef) -> Result<(), BoxError> {
+ }
+ 
+ fn main() -> std::io::Result<()> {
+-    let dataset = serde_json::from_slice(&std::fs::read("/data/dataset.json")?)?;
++    let dataset = serde_json::from_slice(&std::fs::read("./data/dataset.json")?)?;
+     let app: AppRef = Box::leak(Box::new(App {
+         dataset,
+         db: db::Db::from_env(),
+diff --git a/frameworks/uwebzockets/src/main.zig b/frameworks/uwebzockets/src/main.zig
+index 917b6ab83..c83038151 100644
+--- a/frameworks/uwebzockets/src/main.zig
++++ b/frameworks/uwebzockets/src/main.zig
+@@ -207,7 +207,7 @@ fn readFile(init: std.process.Init, path: []const u8) ![]u8 {
+ }
+ 
+ fn datasetPath(init: std.process.Init) []const u8 {
+-    return init.environ_map.get("UZ_DATASET") orelse "/data/dataset.json";
++    return init.environ_map.get("UZ_DATASET") orelse "./data/dataset.json";
+ }
+ 
+ fn clusterConfig(comptime connections: usize) uz.ServerConfig {
+@@ -318,11 +318,11 @@ fn h3Mode(init: std.process.Init) !void {
+ }
+ 
+ fn certPath(init: std.process.Init) []const u8 {
+-    return init.environ_map.get("UZ_CERT") orelse "/certs/server.crt";
++    return init.environ_map.get("UZ_CERT") orelse "./certs/server.crt";
+ }
+ 
+ fn keyPath(init: std.process.Init) []const u8 {
+-    return init.environ_map.get("UZ_KEY") orelse "/certs/server.key";
++    return init.environ_map.get("UZ_KEY") orelse "./certs/server.key";
+ }
+ 
+ fn nullTerminated(init: std.process.Init, value: []const u8) ![:0]u8 {
