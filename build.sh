@@ -25,6 +25,10 @@ frameworks/fib/target/server
 frameworks/fib-tuned/target/server
 '
 
+GOOSE_TARGETS='
+frameworks/plod/target/server
+'
+
 GRADLE_TARGETS='
 frameworks/ktor/build/libs/ktor-httparena.jar
 '
@@ -58,6 +62,15 @@ build_fib() {
   cd - > /dev/null
 }
 
+build_goose() {
+  SRC_NAME=`basename $1`
+  cd `dirname $(dirname $1)`
+  shift
+  mkdir -p target
+  goose build $SRC_NAME.goose $@ --cc "$(which zcc)" -o target/$SRC_NAME --standalone
+  cd - > /dev/null
+}
+
 build_gradle() {
   cd `dirname $1`
   if [ -z "$2" ]; then
@@ -85,6 +98,13 @@ build_zig() {
 for REL_PATH in $FIB_TARGETS; do
   if [ "$FORCE" = '1' ] || [ ! -e "$REL_PATH" ]; then
     build_fib `dirname $(dirname $REL_PATH)`
+  fi
+  du -shL $REL_PATH
+done
+
+for REL_PATH in $GOOSE_TARGETS; do
+  if [ "$FORCE" = '1' ] || [ ! -e "$REL_PATH" ]; then
+    build_goose $REL_PATH
   fi
   du -shL $REL_PATH
 done
