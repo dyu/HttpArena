@@ -31,6 +31,10 @@ frameworks/fletch/.dart_tool/
 .vscode/
 .zed/
 
+# zig
+.zig-cache
+zig-pkg
+
 # Ignore node modules anywhere in the repo
 node_modules/
 
