@@ -9,6 +9,8 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    const mimalloc = b.dependency("mimalloc", .{ .target = target, .optimize = optimize }).module("mimalloc");
+
     // Four flags, each of which keeps its dependency out of a build that does
     // not ask:
     //
@@ -44,6 +46,7 @@ pub fn build(b: *std.Build) void {
             // board never opens a debugger.
             .strip = optimize != .debug,
             .imports = &.{
+                .{ .name = "mimalloc", .module = mimalloc },
                 .{ .name = "nilo_http", .module = nilo.module("nilo_http") },
                 .{ .name = "nilo_sql", .module = nilo.module("nilo_sql") },
             },

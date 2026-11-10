@@ -46,6 +46,7 @@
 //! served (ADR 220).
 
 const std = @import("std");
+const mimalloc = @import("mimalloc");
 const nilo = @import("nilo_http");
 const sql = @import("nilo_sql");
 const fail = nilo.fail;
@@ -701,7 +702,8 @@ fn readable(gpa: std.mem.Allocator, path: []const u8) bool {
 }
 
 pub fn main(init: std.process.Init) !void {
-    const gpa = std.heap.smp_allocator;
+    // const gpa = std.heap.smp_allocator;
+    const gpa = mimalloc.global_allocator;
     const env = init.minimal.environ;
 
     var app = nilo.App.init(gpa);

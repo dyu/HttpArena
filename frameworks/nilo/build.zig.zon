@@ -4,6 +4,10 @@
     .minimum_zig_version = "0.17.0",
     .fingerprint = 0x31b5705688860733,
     .dependencies = .{
+        .mimalloc = .{
+            .url = "git+https://github.com/dyu/zig-mimalloc#972db7244fac7426c6630cbd2382d22939f330f9",
+            .hash = "mimalloc-0.1.0-thznu_M6AACTRKfn2kAeEA88aqdPVqslRPswu_ywEQuO",
+        },
         // Pinned to a commit, not a branch, so the build the board ran is
         // the build the row describes. Move both lines together:
         //   zig fetch --save=nilo git+https://github.com/nevindra/nilo#<commit>
