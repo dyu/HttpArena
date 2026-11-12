@@ -38,6 +38,7 @@ frameworks/cpeak/target/release/httparena-cpeak
 frameworks/may-minihttp/target/release/httparena-may-minihttp
 frameworks/ntex/target/release/httparena-ntex
 frameworks/tako/target/release/httparena-tako
+frameworks/tako-tokio147/target/release/httparena-tako
 '
 
 ZIG_TARGETS='
