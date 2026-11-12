@@ -423,7 +423,7 @@ fn on_call(cx) {
 
 // Where HttpArena mounts the static profiles' files, and the bytes of them
 // each worker keeps in memory: the 43 of up to 64 KB are 0.7 MB.
-let STATIC = "/data/static";
+let STATIC = "./data/static";
 let STATIC_CACHE = 1 << 20;
 
 // An item as the dataset and Postgres's items table hold it, which
@@ -517,7 +517,7 @@ fn read_tags(r: json::Reader&, scratch: u8[>..]&, tags: u8[..24][..6]&) -> bool 
 // /json/:count answers 404; one that doesn't parse ends the process.
 fn load_dataset() {
     var path: u8[>..] = [];
-    if !env("DATASET", path) { path.append("/data/dataset.json"); }
+    if !env("DATASET", path) { path.append("./data/dataset.json"); }
     var text: u8[>..] = [];
     guard read_file(path, text) else { return; }
     var scratch: u8[>..] = [];
