@@ -279,7 +279,7 @@ const Benchmark = struct {
     }
 };
 
-const cert: anole.Cert = .fromFiles("/certs/server.crt", "/certs/server.key");
+const cert: anole.Cert = .fromFiles("./certs/server.crt", "./certs/server.key");
 
 /// HttpArena's ports, one process (docs/server.md#several-listeners).
 const standalone: []const anole.ServerOptions.Listener = &.{
@@ -298,7 +298,7 @@ pub fn main(init: std.process.Init) !void {
     const behind_edge = std.mem.eql(u8, init.environ_map.get("ANOLE_ROLE") orelse "", "gateway");
 
     var state: App = .{};
-    const raw = try std.Io.Dir.cwd().readFileAlloc(init.io, "/data/dataset.json", init.arena.allocator(), .limited(16 << 20));
+    const raw = try std.Io.Dir.cwd().readFileAlloc(init.io, "./data/dataset.json", init.arena.allocator(), .limited(16 << 20));
     state.dataset = try std.json.parseFromSliceLeaky([]const Item, init.arena.allocator(), raw, .{ .ignore_unknown_fields = true });
 
     // var app = try anole.Server(App).init(init.gpa, .{
@@ -329,7 +329,7 @@ pub fn main(init: std.process.Init) !void {
     app.get("/async-db", asyncDb);
     app.wsCallbacks("/ws", WsEcho);
     // Behind an edge, the edge serves /static from its own mount.
-    if (!behind_edge) try app.staticDir("/static", "/data/static", .{ .precompressed = &.{ .br, .gzip } });
+    if (!behind_edge) try app.staticDir("/static", "./data/static", .{ .precompressed = &.{ .br, .gzip } });
     app.grpcWith(pb.BenchmarkService, Benchmark, .{ .no_wait = true });
 
     // Production stack.

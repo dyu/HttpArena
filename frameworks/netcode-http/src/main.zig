@@ -94,8 +94,8 @@ fn serve(gpa: std.mem.Allocator) !void {
     var server = try event_loop.Server(Worker).init(gpa, w, .{
         .address = "0.0.0.0",
         .port = 8443,
-        .cert_path = "/certs/server.crt",
-        .key_path = "/certs/server.key",
+        .cert_path = "./certs/server.crt",
+        .key_path = "./certs/server.key",
         .reuse_port = true,
         .http1 = .{ .port = 8080, .tls = false, .alt_svc = false, .max_connections = 65536 },
     });

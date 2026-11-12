@@ -34,7 +34,7 @@ const ResponseItem = struct {
 };
 
 fn loadDataset(allocator: std.mem.Allocator, io: std.Io) void {
-    const file = std.Io.Dir.cwd().openFile(io, "/data/dataset.json", .{}) catch return;
+    const file = std.Io.Dir.cwd().openFile(io, "./data/dataset.json", .{}) catch return;
     defer file.close(io);
 
     var read_buf: [8192]u8 = undefined;
@@ -236,8 +236,8 @@ pub fn main(init: std.process.Init) !void {
         }) catch null;
     }
 
-    const cert_path = init.environ_map.get("TLS_CERT") orelse "/certs/server.crt";
-    const key_path = init.environ_map.get("TLS_KEY") orelse "/certs/server.key";
+    const cert_path = init.environ_map.get("TLS_CERT") orelse "./certs/server.crt";
+    const key_path = init.environ_map.get("TLS_KEY") orelse "./certs/server.key";
     const have_certs = blk: {
         std.Io.Dir.cwd().access(rt.io(), cert_path, .{}) catch break :blk false;
         std.Io.Dir.cwd().access(rt.io(), key_path, .{}) catch break :blk false;
@@ -272,7 +272,7 @@ pub fn main(init: std.process.Init) !void {
     server.router.get("/fortunes", fortunes);
 
     // Mounted by the harness; absent when the server is run on its own.
-    const static_dir: ?std.Io.Dir = std.Io.Dir.cwd().openDir(rt.io(), "/data/static", .{}) catch null;
+    const static_dir: ?std.Io.Dir = std.Io.Dir.cwd().openDir(rt.io(), "./data/static", .{}) catch null;
     defer if (static_dir) |dir| dir.close(rt.io());
     if (static_dir) |dir| {
         server.router.static("/static", dir, .{ .precompressed = &.{ .br, .gzip } });

@@ -77,7 +77,7 @@ struct Items<T> {
 
 // The dataset that HttpArena mounts, read once
 static DATASET: LazyLock<Vec<DatasetItem>> = LazyLock::new(|| {
-    let data = std::fs::read_to_string("/data/dataset.json").unwrap_or_default();
+    let data = std::fs::read_to_string("./data/dataset.json").unwrap_or_default();
     serde_json::from_str(&data).unwrap_or_default()
 });
 
@@ -160,8 +160,8 @@ async fn read_body(req: &mut CpeakRequest) -> Result<Vec<u8>, CpeakError> {
 // The key and the certificate that HttpArena mounts for the tests over TLS
 fn https_options() -> Option<HttpsOptions> {
     Some(HttpsOptions {
-        key: std::fs::read_to_string("/certs/server.key").ok()?,
-        cert: std::fs::read_to_string("/certs/server.crt").ok()?,
+        key: std::fs::read_to_string("./certs/server.key").ok()?,
+        cert: std::fs::read_to_string("./certs/server.crt").ok()?,
     })
 }
 

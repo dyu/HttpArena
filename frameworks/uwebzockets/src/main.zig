@@ -207,7 +207,7 @@ fn readFile(init: std.process.Init, path: []const u8) ![]u8 {
 }
 
 fn datasetPath(init: std.process.Init) []const u8 {
-    return init.environ_map.get("UZ_DATASET") orelse "/data/dataset.json";
+    return init.environ_map.get("UZ_DATASET") orelse "./data/dataset.json";
 }
 
 fn clusterConfig(comptime connections: usize) uz.ServerConfig {
@@ -318,11 +318,11 @@ fn h3Mode(init: std.process.Init) !void {
 }
 
 fn certPath(init: std.process.Init) []const u8 {
-    return init.environ_map.get("UZ_CERT") orelse "/certs/server.crt";
+    return init.environ_map.get("UZ_CERT") orelse "./certs/server.crt";
 }
 
 fn keyPath(init: std.process.Init) []const u8 {
-    return init.environ_map.get("UZ_KEY") orelse "/certs/server.key";
+    return init.environ_map.get("UZ_KEY") orelse "./certs/server.key";
 }
 
 fn nullTerminated(init: std.process.Init, value: []const u8) ![:0]u8 {

@@ -122,7 +122,6 @@ fn delay(ms: u32) !Number {
     return .{ .value = ms };
 }
 
-
 // ---- async-db instrumentation: one line a second in the container's log ----
 //
 // What the board publishes for a profile is its log, so a run that comes out
@@ -184,7 +183,6 @@ const Stats = struct {
         return .{ .mean = total / n, .p99 = p99 };
     }
 };
-
 
 /// What the operating system says about this process's threads, read from
 /// /proc once a second: where the CPU went (a few hot threads or all of
@@ -482,7 +480,6 @@ const Range = struct {
     limit: i32 = 50,
 };
 
-
 fn asyncDb(db: *sql.Db, c: *nilo.Ctx, q: nilo.Query(Range)) !Listing {
     const started = requestStarted();
     defer requestEnded(started);
@@ -721,7 +718,7 @@ pub fn main(init: std.process.Init) !void {
     // The board mounts `/data/static` for the static profiles. A developer
     // running this by hand from the repository does not have it, and the
     // other profiles should not die for want of it.
-    const static_dir = env.getPosix("STATIC_DIR") orelse "/data/static";
+    const static_dir = env.getPosix("STATIC_DIR") orelse "./data/static";
     if (readable(gpa, static_dir)) {
         try app.staticWith("/static", static_dir, .{ .follow = true });
     } else {
@@ -731,7 +728,7 @@ pub fn main(init: std.process.Init) !void {
     // The 50-item dataset the board mounts. Both `/json` profiles need it,
     // and a container without it should say so once here rather than answer
     // a 500 per request.
-    const dataset_path = env.getPosix("DATASET") orelse "/data/dataset.json";
+    const dataset_path = env.getPosix("DATASET") orelse "./data/dataset.json";
     var parsed = loadDataset(gpa, dataset_path) catch |err| {
         std.log.err(
             "could not read the dataset at \"{s}\" ({s}). The board mounts it; " ++
@@ -788,8 +785,8 @@ pub fn main(init: std.process.Init) !void {
     // 8443 (TLS, `h2` first by ALPN). In a build with `.http2 = true` a TLS
     // listener offers both by ALPN and serves what the client chose, so the
     // two TLS ports differ only in who connects to them.
-    const cert = env.getPosix("TLS_CERT") orelse "/certs/server.crt";
-    const key = env.getPosix("TLS_KEY") orelse "/certs/server.key";
+    const cert = env.getPosix("TLS_CERT") orelse "./certs/server.crt";
+    const key = env.getPosix("TLS_KEY") orelse "./certs/server.key";
     var also: [3]nilo.Options.Listener = undefined;
     var n_also: usize = 0;
     also[n_also] = .{ .address = "0.0.0.0", .port = 8082 };

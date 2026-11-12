@@ -45,8 +45,8 @@ public final class Main {
         // Port 8082: HTTP/2 cleartext prior knowledge (baseline-h2c, json-h2c)
         server.listen(8082);
 
-        String certFile = "/certs/server.crt";
-        String keyFile = "/certs/server.key";
+        String certFile = "./certs/server.crt";
+        String keyFile = "./certs/server.key";
         boolean hasCerts = Files.exists(Path.of(certFile)) && Files.exists(Path.of(keyFile));
 
         if (hasCerts) {

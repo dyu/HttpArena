@@ -20,8 +20,8 @@ use tako::ws::TakoWs;
 use tako::{Bytes, PerThreadConfig, Server, TlsCert};
 use tokio::net::TcpListener;
 
-const CERT: &str = "/certs/server.crt";
-const KEY: &str = "/certs/server.key";
+const CERT: &str = "./certs/server.crt";
+const KEY: &str = "./certs/server.key";
 
 type AppRef = &'static App;
 
@@ -152,7 +152,7 @@ async fn ws_echo(req: Request) -> impl Responder {
 }
 
 fn router(app: AppRef) -> Router {
-    let files = ServeDir::builder("/data")
+    let files = ServeDir::builder("./data")
         .precompressed(PrecompressedPolicy::both())
         .build();
     let mut router = Router::new();
@@ -200,7 +200,7 @@ async fn serve(app: AppRef) -> Result<(), BoxError> {
 }
 
 fn main() -> std::io::Result<()> {
-    let dataset = serde_json::from_slice(&std::fs::read("/data/dataset.json")?)?;
+    let dataset = serde_json::from_slice(&std::fs::read("./data/dataset.json")?)?;
     let app: AppRef = Box::leak(Box::new(App {
         dataset,
         db: db::Db::from_env(),
