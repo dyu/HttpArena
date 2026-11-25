@@ -71,7 +71,7 @@ const APP_OCTET: HeaderValue = HeaderValue::from_static("application/octet-strea
 const ENC_GZIP: HeaderValue = HeaderValue::from_static("gzip");
 
 static DATASET: LazyLock<Vec<DatasetItem>> = LazyLock::new(|| {
-    let path = env::var("DATASET_PATH").unwrap_or_else(|_| "/data/dataset.json".to_string());
+    let path = env::var("DATASET_PATH").unwrap_or_else(|_| "./data/dataset.json".to_string());
     std::fs::read_to_string(path)
         .ok()
         .and_then(|data| serde_json::from_str(&data).ok())
@@ -294,8 +294,8 @@ fn build_tls_config(
 }
 
 fn load_tls_bundle() -> Option<TlsBundle> {
-    let cert_path = env::var("TLS_CERT").unwrap_or_else(|_| "/certs/server.crt".to_string());
-    let key_path = env::var("TLS_KEY").unwrap_or_else(|_| "/certs/server.key".to_string());
+    let cert_path = env::var("TLS_CERT").unwrap_or_else(|_| "./certs/server.crt".to_string());
+    let key_path = env::var("TLS_KEY").unwrap_or_else(|_| "./certs/server.key".to_string());
     let cert_file = File::open(cert_path).ok()?;
     let key_file = File::open(key_path).ok()?;
     let certs: Vec<_> = rustls_pemfile::certs(&mut BufReader::new(cert_file))
