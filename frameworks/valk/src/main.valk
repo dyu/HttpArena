@@ -50,7 +50,7 @@ global h2c_routes: ?http.Router[Handler] (null)
 fn dataset() Array[Item] {
     let d = thread_dataset
     if isset(d) : return d
-    let path = core.getenv("DATASET_PATH") !? "/data/dataset.json"
+    let path = core.getenv("DATASET_PATH") !? "./data/dataset.json"
     let text = fs.read(path) !? "[]"
     let loaded = json.decode_to[Array[Item]](text) !? Array[Item].new()
     thread_dataset = loaded
@@ -203,9 +203,9 @@ fn start_h2_tls(cert_path: String, key_path: String, static_dir: String) {
 }
 
 fn main() {
-    let cert_path = core.getenv("TLS_CERT") !? "/certs/server.crt"
-    let key_path = core.getenv("TLS_KEY") !? "/certs/server.key"
-    let static_dir = core.getenv("STATIC_DIR") !? "/data/static"
+    let cert_path = core.getenv("TLS_CERT") !? "./certs/server.crt"
+    let key_path = core.getenv("TLS_KEY") !? "./certs/server.key"
+    let static_dir = core.getenv("STATIC_DIR") !? "./data/static"
 
     thread.Thread[void].start(start_h2c) ! panic("Failed to spawn h2c listener")
 
