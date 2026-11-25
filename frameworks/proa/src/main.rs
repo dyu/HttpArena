@@ -1,3 +1,6 @@
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
 mod fortunes;
 mod grpc;
 mod h3_server;
@@ -53,9 +56,6 @@ use tokio::{
 use tokio_rustls::TlsAcceptor;
 
 use crate::fortunes::{Fortune, Fortunes};
-
-#[global_allocator]
-static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 const FORTUNE_COUNT: usize = 201;
 const ADDITIONAL_FORTUNE: &str = "Additional fortune added at request time.";
