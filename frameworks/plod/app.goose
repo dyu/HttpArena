@@ -423,7 +423,7 @@ fn on_call(cx) {
 
 // Where HttpArena mounts the static profiles' files, and the bytes of them
 // each worker keeps in memory: the 43 of up to 64 KB are 0.7 MB.
-let STATIC = "/data/static";
+let STATIC = "./data/static";
 let STATIC_CACHE = 1 << 20;
 
 // An item as the dataset and Postgres's items table hold it, which
@@ -517,7 +517,7 @@ fn read_tags(r: json::Reader&, scratch: u8[>..]&, tags: u8[..24][..6]&) -> bool 
 // /json/:count answers 404; one that doesn't parse ends the process.
 fn load_dataset() {
     var path: u8[>..] = [];
-    if !env("DATASET", path) { path.append("/data/dataset.json"); }
+    if !env("DATASET", path) { path.append("./data/dataset.json"); }
     var text: u8[>..] = [];
     guard read_file(path, text) else { return; }
     var scratch: u8[>..] = [];
@@ -579,8 +579,15 @@ fn load_database(cfg: http::Config) {
 
 // 8080, h2c on 8082, and a wait per connection for /delay and /async-db.
 fn config() -> http::Config {
-    var cfg = http::Config { port: 8080, mail_slots: 256, .. };
+    var env_buf: u8[>..] = [];
+    var cfg = http::Config { address: "0.0.0.0", port: 8080, mail_slots: 256, .. };
     cfg.max_waiting = cfg.max_conns;
-    cfg.listeners.push(http::Listener { port: 8082, h2c: true });
+    if !env("SKIP_H2C", env_buf) ||
+            env_buf.len != 1 ||
+            1 != parse_digit(env_buf[0], 10) {
+        cfg.listeners.push(http::Listener { port: 8082, h2c: true });
+    } else {
+        print("Skipped listening on port 8082 (h2c)\n");
+    }
     return cfg;
 }
