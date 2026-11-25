@@ -41,6 +41,10 @@ frameworks/tako/target/release/httparena-tako
 frameworks/tako-tokio147/target/release/httparena-tako
 '
 
+VALK_TARGETS='
+frameworks/valk/target/server
+'
+
 ZIG_TARGETS='
 frameworks/dusty/zig-out/bin/dusty-arena
 frameworks/dusty-tuned/zig-out/bin/dusty-arena
@@ -94,6 +98,13 @@ build_rs() {
   cd - > /dev/null
 }
 
+build_valk() {
+  cd "$1"
+  mkdir -p target
+  valk build src -o target/server --release --static
+  cd - > /dev/null
+}
+
 build_zig() {
   ZIG_BIN="${2:-"zig18"}"
   cd `dirname $1`
@@ -125,6 +136,13 @@ done
 for REL_PATH in $RS_TARGETS; do
   if [ "$FORCE" = '1' ] || [ ! -e "$REL_PATH" ]; then
     build_rs `dirname $(dirname $REL_PATH)`
+  fi
+  du -shL $REL_PATH
+done
+
+for REL_PATH in $VALK_TARGETS; do
+  if [ "$FORCE" = '1' ] || [ ! -e "$REL_PATH" ]; then
+    build_valk `dirname $(dirname $REL_PATH)`
   fi
   du -shL $REL_PATH
 done
