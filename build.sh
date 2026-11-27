@@ -102,7 +102,11 @@ build_rs() {
 build_valk() {
   cd "$1"
   mkdir -p target
-  valk build src -o target/server --release --static
+  if [ -e 'build.sh' ]; then
+    ./build.sh
+  else
+    valk build src -o target/server --release --static
+  fi
   cd - > /dev/null
 }
 
